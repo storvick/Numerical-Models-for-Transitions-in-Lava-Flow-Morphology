@@ -34,3 +34,16 @@ to StgFEM/plugins/StandardConditionFunctions/StandardConditionsFunctions.c/h.
 (note the file name change.)
 
 Finally, rebuild Gale by running ./scons in the top directory of the Gale source.
+
+
+# Issues with building Gale-1.6 with gcc-4.9
+- In case of the following error, 
+
+    > StGermain/Base/IO/src/BinaryStream.c:165:2: error: non-void function 'BinaryStream_WriteAllProcessors' should return a value [-Wreturn-type]
+    > return;
+    >       ^
+
+Maybe we should declar the function as the 'void' type?
+        
+
+
