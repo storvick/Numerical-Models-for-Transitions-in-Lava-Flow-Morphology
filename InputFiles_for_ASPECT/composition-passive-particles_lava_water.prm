@@ -119,6 +119,7 @@ subsection Postprocess
 
   subsection Visualization
     set Time between graphical output = 0.1
+    set List of output variables = material properties, strain rate, stress
   end
 
   subsection Particles
