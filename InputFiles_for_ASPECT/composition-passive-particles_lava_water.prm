@@ -75,7 +75,7 @@ subsection Initial temperature model
 
   subsection Function
     set Variable names      = x,z
-    set Function expression = 1.0
+    set Function expression = 0.0
   end
 end
 
