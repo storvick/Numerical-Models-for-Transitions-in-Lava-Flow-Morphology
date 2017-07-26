@@ -41,7 +41,7 @@ end
 subsection Model settings
   set Fixed temperature boundary indicators   = bottom, top
   set Zero velocity boundary indicators       = 
-  set Tangential velocity boundary indicators = left
+  set Tangential velocity boundary indicators = left, right
   set Prescribed velocity boundary indicators = bottom: function
   set Free surface boundary indicators        = top
 end
@@ -144,18 +144,18 @@ subsection Initial composition model
   subsection Function
     set Variable names      = x,y
     set Function constants  = r=0.5
-    set Function expression = if(sqrt(x*x+y*y)>r, 1, 0)
+    set Function expression = if(sqrt(x*x+y*y)>r && y > 0.1, 1, 0)
   end
 end
                                   
 subsection Boundary composition model
-  #set Model name = initial composition
-  set Model name = function
-
-  subsection Function
-    set Variable names      = x,y
-    # set Function constasts  = 
-    set Function expression = if(x<=0.2, 0.0, 1.0)
-  end
+  set Model name = initial composition
+  #set Model name = function
+  #
+  #subsection Function
+  #  set Variable names      = x,y
+  #  # set Function constasts  = 
+  #  set Function expression = if(x<=0.2, 0.0, 1.0)
+  #end
 end
 
