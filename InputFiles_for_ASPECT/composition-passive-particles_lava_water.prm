@@ -51,8 +51,8 @@ subsection Boundary temperature model
   set List of model names = box
 
   subsection Box
-    set Bottom temperature = 0
-    set Top temperature    = 0
+    set Bottom temperature = 1.0
+    set Top temperature    = 1.0
   end
 end
 
@@ -75,7 +75,7 @@ subsection Initial temperature model
 
   subsection Function
     set Variable names      = x,z
-    set Function expression = 0.0
+    set Function expression = 1.0
   end
 end
 
@@ -97,7 +97,7 @@ subsection Material model
         set Thermal expansivities                     = 2e-5, 2e-5
         set Viscosity averaging scheme                = maximum composition
         set Viscous flow law                          = dislocation
-        set Prefactors for dislocation creep          = 1e-2, 100.0
+        set Prefactors for dislocation creep          = 1e-2, 10.0
         set Stress exponents for dislocation creep    = 1.0, 1.0
         set Activation energies for dislocation creep = 0.0, 0.0
         set Activation volumes for dislocation creep  = 0.0, 0.0
