@@ -40,6 +40,7 @@ end
 
 subsection Model settings
   set Fixed temperature boundary indicators   = bottom, top
+  set Fixed composition boundary indicators   = bottom
   set Zero velocity boundary indicators       = 
   set Tangential velocity boundary indicators = left, right
   set Prescribed velocity boundary indicators = bottom: function
@@ -88,15 +89,15 @@ subsection Material model
         set Reference viscosity                       = 1.0
         set Minimum strain rate                       = 1.e-20
         set Reference strain rate                     = 1.e-16
-        set Minimum viscosity                         = 1e-1
-        set Maximum viscosity                         = 1e3
+        set Minimum viscosity                         = 1e-2
+        set Maximum viscosity                         = 1e10
         set Thermal diffusivities                     = 1e-5, 1.6e-5
         set Heat capacities                           = 840., 1185.5
         set Densities                                 = 2800, 1000
         set Thermal expansivities                     = 2e-5, 2e-5
-        set Viscosity averaging scheme                = harmonic
+        set Viscosity averaging scheme                = maximum composition
         set Viscous flow law                          = dislocation
-        set Prefactors for dislocation creep          = 0.001, 10.0
+        set Prefactors for dislocation creep          = 1e-2, 100.0
         set Stress exponents for dislocation creep    = 1.0, 1.0
         set Activation energies for dislocation creep = 0.0, 0.0
         set Activation volumes for dislocation creep  = 0.0, 0.0
@@ -151,12 +152,5 @@ end
                                   
 subsection Boundary composition model
   set Model name = initial composition
-  #set Model name = function
-  #
-  #subsection Function
-  #  set Variable names      = x,y
-  #  # set Function constasts  = 
-  #  set Function expression = if(x<=0.2, 0.0, 1.0)
-  #end
 end
 
