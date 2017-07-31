@@ -157,6 +157,9 @@ namespace aspect
         double min_visc;
         double max_visc;
         double ref_visc;
+
+	double gamma;
+	double viscosity_water;
 	
         double grain_size;
 
@@ -251,6 +254,13 @@ namespace aspect
         std::vector<double> exponents_stress_limiter;
 
         std::vector<double> max_crystal_frac;
+        std::vector<double> initial_crystal_frac;
+        std::vector<double> crystal_frac_increment;
+        std::vector<double> initial_temp;
+        std::vector<double> solidus_temp;
+        std::vector<double> vol_frac_of_crystal;
+        std::vector<double> alpha;
+        std::vector<double> beta;
     };
 
   }

@@ -213,15 +213,11 @@ namespace aspect
                                          std::pow(edot_ii,((1. - stress_exponents_dislocation[j])/stress_exponents_dislocation[j]));
           // For lava.
           const double ref_visc = reference_viscosity();
-          const double omega0 = 0.0;
-          const double omegaf = 0.0;
-//          const double omega_max = 0.0;
-          const double T0 = 0.0;
-          const double Tsol = 0.0;
-          const double gamma = 0.04;
-          const double omega = omega0 + omegaf*(T0-temperature)/(T0-Tsol);
-          const double crysfrac_factor = std::pow((1.0-omega/max_crystal_frac[j]),-2.5); 
-          double viscosity_lava = ref_visc * crysfrac_factor * std::exp(gamma * (T0-temperature));
+          double vol_frac_of_crystal = initial_crystal_frac[j] + crystal_frac_increment[j]*(initial_temp[j]-temperature)/(initial_temp[j]-solidus_temp[j]);
+		if(vol_frac_of_crystal>max_crystal_frac[j]) vol_frac_of_crystal=max_crystal_frac[j];
+          const double crysfrac_factor = std::pow((1.0-vol_frac_of_crystal/max_crystal_frac[j]),-2.5); 
+          double viscosity_lava = alpha[j] * ( ref_visc * crysfrac_factor * std::exp(gamma * (initial_temp[j]-temperature)) ) 
+                                + beta[j] * viscosity_water;
 
           // Composite viscosity
           double viscosity_composite = (viscosity_diffusion * viscosity_dislocation)/(viscosity_diffusion + viscosity_dislocation);
@@ -740,6 +736,29 @@ namespace aspect
                              "for a total of N+1 values, where N is the number of compositional fields. "
                              "If only one value is given, then all use the same value. "
                              "Units: n/a");
+	prm.declare_entry ("Initial crystal fraction", "0.0",
+                             Patterns::List(Patterns::Double(0)),
+			     "Units: n/a");
+	prm.declare_entry ("Crystal fraction increment", "0.0",
+                             Patterns::List(Patterns::Double(0)),
+			     "Units: n/a");
+        prm.declare_entry ("Initial temperature", "873",
+                             Patterns::List(Patterns::Double(0)),
+                             "Units: n/a");
+        prm.declare_entry ("Solidus temperature", "1373",
+                             Patterns::List(Patterns::Double(0)),
+                             "Units: n/a");
+	prm.declare_entry ("Gamma", "0.04", Patterns::Double(0),
+                             "For calculating lava viscosity. Units: n/a");
+        prm.declare_entry ("Alpha", "0.0",
+                             Patterns::List(Patterns::Double(0)),
+                             "Units: n/a");
+        prm.declare_entry ("Beta", "0.0",
+                             Patterns::List(Patterns::Double(0)),
+                             "Units: n/a");
+        prm.declare_entry ("Viscosity water", "0.0",
+                             Patterns::List(Patterns::Double(0)),
+                             "Units: n/a");
         }
         prm.leave_subsection();
       }
@@ -893,7 +912,22 @@ namespace aspect
 	// Lava parameters 
 	max_crystal_frac = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Maximum crystal fraction"))),                                         
  									 n_fields,                                                                              					"Maximum crystal fraction");
-        }
+       
+        initial_crystal_frac = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Initial crystal fraction"))),
+                                                                         n_fields,                                                                                                                      "Initial crystal fraction");
+        crystal_frac_increment = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Crystal fraction increment"))),
+                                                                         n_fields,                                                                                                                      "Crystal fraction increment");
+        initial_temp = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Initial temperature"))),
+                                                                         n_fields,                                                                                                                      "Initial temperature");
+        solidus_temp = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Solidus temperature"))),
+                                                                         n_fields,                                                                                                                      "Solidus temperature");
+	gamma = prm.get_double("Gamma");
+        viscosity_water = prm.get_double("Viscosity water");
+        alpha = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Alpha"))),
+                                                                         n_fields,                                                                                                                      "Alpha");
+        beta = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Beta"))),
+                                                                         n_fields,                                                                                                                      "Beta");	
+	 }
         prm.leave_subsection();
       }
       prm.leave_subsection();
