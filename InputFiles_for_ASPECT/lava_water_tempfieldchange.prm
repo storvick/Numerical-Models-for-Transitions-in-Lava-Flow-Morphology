@@ -82,8 +82,9 @@ subsection Initial temperature model
   subsection Function
     set Variable names      = x,y
     set Function constants  = T=1300,s=0.2
-    set Function expression = if(sqrt(x*x+y*y)<=0.5, T*exp(-(x*x+y*y)/(s*s))+273,273)
-  end
+  #  set Function expression = if(sqrt(x*x+y*y)<=0.5, T*exp(-(x*x+y*y)/(s*s))+273,273)
+    set Function expression = if(sqrt(x*x+y*y)<=0.3, T+273, 273)
+ end
 end
 
 
@@ -99,14 +100,14 @@ subsection Material model
         set Solidus temperature                       = 873
         set Gamma                                     = 0.04
 	set Alpha				      = 1.0, 0.0
-	set Viscosity water 			      = 100 
+	set Viscosity water 			      = 0.1 
 	set Beta				      = 0.0, 1.0
         set Reference temperature                     = 293.0
-        set Reference viscosity                       = 1.0
+        set Reference viscosity                       = 50.0
         set Minimum strain rate                       = 1.e-20
         set Reference strain rate                     = 1.e-16
         set Minimum viscosity                         = 1e-1
-        set Maximum viscosity                         = 1e4
+        set Maximum viscosity                         = 1e3
         set Thermal diffusivities                     = 1e-5, 1.6e-5
         set Heat capacities                           = 840., 1185.5
         set Densities                                 = 2800, 1000
