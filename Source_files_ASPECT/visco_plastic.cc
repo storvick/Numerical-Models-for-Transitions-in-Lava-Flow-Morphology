@@ -215,9 +215,13 @@ namespace aspect
           const double ref_visc = reference_viscosity();
           double vol_frac_of_crystal = initial_crystal_frac[j] + crystal_frac_increment[j]*(initial_temp[j]-temperature)/(initial_temp[j]-solidus_temp[j]);
 		if(vol_frac_of_crystal>max_crystal_frac[j]) vol_frac_of_crystal=max_crystal_frac[j];
-          const double crysfrac_factor = std::pow((1.0-vol_frac_of_crystal/max_crystal_frac[j]),-2.5); 
+         
+	 double crysfrac_factor = std::pow((1.0-vol_frac_of_crystal/max_crystal_frac[j]),-2.5);
+		if(crysfrac_factor>1e6) crysfrac_factor=1e6;
+	//std::cerr << "Value of crystalfraction factor is "<< crysfrac_factor <<endl; 
           double viscosity_lava = alpha[j] * ( ref_visc * crysfrac_factor * std::exp(gamma * (initial_temp[j]-temperature)) ) 
                                 + beta[j] * viscosity_water;
+	//std::cerr << "Value of lava viscosity is "<< viscosity_lava << endl;
 
           // Composite viscosity
           double viscosity_composite = (viscosity_diffusion * viscosity_dislocation)/(viscosity_diffusion + viscosity_dislocation);
