@@ -211,16 +211,26 @@ namespace aspect
                                          std::exp((activation_energies_dislocation[j] + pressure*activation_volumes_dislocation[j])/
                                                   (constants::gas_constant*temperature*stress_exponents_dislocation[j])) *
                                          std::pow(edot_ii,((1. - stress_exponents_dislocation[j])/stress_exponents_dislocation[j]));
-          // For lava.
-          const double ref_visc = reference_viscosity();
-          double vol_frac_of_crystal = initial_crystal_frac[j] + crystal_frac_increment[j]*(initial_temp[j]-temperature)/(initial_temp[j]-solidus_temp[j]);
-		if(vol_frac_of_crystal>max_crystal_frac[j]) vol_frac_of_crystal=max_crystal_frac[j];
          
-	 double crysfrac_factor = std::pow((1.0-vol_frac_of_crystal/max_crystal_frac[j]),-2.5);
-		if(crysfrac_factor>1e6) crysfrac_factor=1e6;
-	//std::cerr << "Value of crystalfraction factor is "<< crysfrac_factor <<endl; 
-          double viscosity_lava = alpha[j] * ( ref_visc * crysfrac_factor * std::exp(gamma * (initial_temp[j]-temperature)) ) 
-                                + beta[j] * viscosity_water;
+	  // For lava.
+          const double ref_visc = reference_viscosity();
+	  double dTemp    = initial_temp[j]-temperature;
+	  if( dTemp < 0.0) dTemp = 0;
+	  const double crystal_frac_increment = 0.5*(initial_temp[j]-solidus_temp[j])/initial_temp[j];	
+	  const double max_crystal_frac = initial_crystal_frac[j]+crystal_frac_increment+0.1;
+	  double vol_frac_of_crystal; 
+          if( temperature > solidus_temp[j] ) {
+              vol_frac_of_crystal = initial_crystal_frac[j] + crystal_frac_increment*dTemp/(initial_temp[j]-solidus_temp[j]);
+          }
+          else{ vol_frac_of_crystal = max_crystal_frac - 0.1; }
+	  double crysfrac_factor = std::pow((1.0-vol_frac_of_crystal/max_crystal_frac),-2.5); 
+          //std::cerr << "Value of crystalfraction factor is "<< crysfrac_factor <<endl;
+	  double viscosity_lava;
+          if( dTemp > 0.0 ) {
+              viscosity_lava = alpha[j] * ( ref_visc * crysfrac_factor * std::exp(gamma * dTemp) ) 
+               	   + beta[j] * viscosity_water;
+          }
+          else{ viscosity_lava = ref_visc; }
 	//std::cerr << "Value of lava viscosity is "<< viscosity_lava << endl;
 
           // Composite viscosity
@@ -735,11 +745,11 @@ namespace aspect
 
 	// Lava parameters 
 	prm.declare_entry ("Maximum crystal fraction", "0.68",
-                             Patterns::List(Patterns::Double(0)),
+                            Patterns::List(Patterns::Double(0)),
+
                              "List of max crystal fractions, $A$, for background material and compositional fields, "
                              "for a total of N+1 values, where N is the number of compositional fields. "
-                             "If only one value is given, then all use the same value. "
-                             "Units: n/a");
+                             "If only one value is given, then all use the same value. ");
 	prm.declare_entry ("Initial crystal fraction", "0.0",
                              Patterns::List(Patterns::Double(0)),
 			     "Units: n/a");
@@ -914,8 +924,8 @@ namespace aspect
                                                                               "Stress limiter exponents");
 
 	// Lava parameters 
-	max_crystal_frac = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Maximum crystal fraction"))),                                         
- 									 n_fields,                                                                              					"Maximum crystal fraction");
+	max_crystal_frac = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Maximum crystal fraction"))),           
+ 									n_fields,	                                                                              					"Maximum crystal fraction");
        
         initial_crystal_frac = Utilities::possibly_extend_from_1_to_N (Utilities::string_to_double(Utilities::split_string_list(prm.get("Initial crystal fraction"))),
                                                                          n_fields,                                                                                                                      "Initial crystal fraction");

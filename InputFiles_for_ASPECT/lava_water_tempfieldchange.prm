@@ -95,14 +95,14 @@ subsection Material model
 
         set Maximum crystal fraction                  = 0.68
         set Initial crystal fraction                  = 0.0
-        set Crystal fraction increment                = 0.68
-        set Initial temperature                       = 1373
-        set Solidus temperature                       = 873
+       # set Crystal fraction increment                = 0.68
+        set Initial temperature                       = 1373.0
+        set Solidus temperature                       = 873.0
         set Gamma                                     = 0.04
 	set Alpha				      = 1.0, 0.0
 	set Viscosity water 			      = 0.1 
 	set Beta				      = 0.0, 1.0
-        set Reference temperature                     = 293.0
+        set Reference temperature                     = 273.0
         set Reference viscosity                       = 50.0
         set Minimum strain rate                       = 1.e-20
         set Reference strain rate                     = 1.e-16
