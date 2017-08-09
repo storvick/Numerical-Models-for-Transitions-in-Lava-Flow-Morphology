@@ -8,11 +8,11 @@
 # See the manual for more information about this setup.
 
 
-set Dimension                              = 2
+set Dimension                              = 3
 set Start time                             = 0
-set End time                               = 10.0 
+set End time                               = 7.5 
 set Use years in output instead of seconds = false
-set Output directory                       = ./lava_water_output_frictionangle35
+set Output directory                       = ./lava_water_3D_output
 set Pressure normalization                 = no
 
 subsection Geometry model
@@ -21,15 +21,16 @@ subsection Geometry model
   subsection Box
     set X extent = 2.5
     set Y extent = 2
+    set Z extent = 2.5
   end
 end
 
 # Advecting the free surface vertically rather than
 # in the surface normal direction can result in a
 # more stable mesh when the deformation is large
-subsection Free surface
-  set Surface velocity projection = vertical
-end
+# subsection Free surface
+#   set Surface velocity projection = vertical
+# end
 
 # Advecting the free surface vertically rather than
 # in the surface normal direction can result in a
@@ -42,8 +43,8 @@ subsection Model settings
   set Fixed temperature boundary indicators   = bottom, top
   set Fixed composition boundary indicators   = bottom
   set Zero velocity boundary indicators       = 
-  set Tangential velocity boundary indicators = left, right
-  set Prescribed velocity boundary indicators = bottom: function
+  set Tangential velocity boundary indicators = right, back
+  set Prescribed velocity boundary indicators = bottom: function, left: function, front: function
   set Free surface boundary indicators        = top
 end
 
@@ -56,17 +57,17 @@ subsection Boundary temperature model
  # end
 
   subsection Function
-    set Variable names = x,y
-    set Function constants = 
-    set Function expression = if(y==2, 273, if(x<=0.2 && y==0, 1573, 273)) 
+    set Variable names = x,y,z
+    set Function constants = r = 0.2 
+    set Function expression = if(z==2.5, 273, if(sqrt(x*x+y*y)<=r, 1573, 273)) 
   end 
 end
 
 subsection Boundary velocity model
   subsection Function
-    set Variable names      = x,y
-    # set Function constasts  = 
-    set Function expression = 0; if(x<=0.2, 0.3, 0.0)
+    set Variable names      = x,y,z
+    set Function constants  = r = 0.2
+    set Function expression = if(sqrt(x*x+y*y)<=r && z==0, 0.3, 0.0); 0; 0 #not sure this is right setup
   end
 end
 
@@ -80,10 +81,10 @@ subsection Initial temperature model
   set Model name = function
 
   subsection Function
-    set Variable names      = x,y
+    set Variable names      = x,y,z
     set Function constants  = T=1300,s=0.2
   #  set Function expression = if(sqrt(x*x+y*y)<=0.5, T*exp(-(x*x+y*y)/(s*s))+273,273)
-    set Function expression = if(sqrt(x*x+y*y)<=0.3, T+273, 273)
+    set Function expression = if(sqrt(x*x+y*y+z*z)<=0.3, T+273, 273)
  end
 end
 
@@ -100,13 +101,13 @@ subsection Material model
         set Solidus temperature                       = 873.0
         set Gamma                                     = 0.04
 	set Alpha				      = 1.0, 0.0
-	set Viscosity water 			      = 0.1 
+	set Viscosity water 			      = 10 # 0.1 
 	set Beta				      = 0.0, 1.0
         set Reference temperature                     = 273.0
         set Reference viscosity                       = 50.0
         set Minimum strain rate                       = 1.e-20
         set Reference strain rate                     = 1.e-16
-        set Minimum viscosity                         = 1e-1
+        set Minimum viscosity                         = 10 # 1e-1 
         set Maximum viscosity                         = 1e3
         set Thermal diffusivities                     = 1e-5, 1.6e-5
         set Heat capacities                           = 840., 1185.5
@@ -127,12 +128,12 @@ end
 
 subsection Mesh refinement
   set Initial adaptive refinement        = 4
-  set Initial global refinement          = 5
-  set Minimum refinement level           = 5
+  set Initial global refinement          = 4
+  set Minimum refinement level           = 4
   set Refinement fraction                = 0.4
   set Coarsening fraction                = 0.3
   set Strategy                           = viscosity
-  set Time steps between mesh refinement = 5
+  set Time steps between mesh refinement = 0
 end
 
 
@@ -165,9 +166,9 @@ subsection Initial composition model
   set Model name = function
 
   subsection Function
-    set Variable names      = x,y
+    set Variable names      = x,y,z
     set Function constants  = r=0.5
-    set Function expression = if(sqrt(x*x+y*y)>r && y > 0.1, 1, 0)
+    set Function expression = if(sqrt(x*x+y*y+z*z)<r || z<0.01, 0, 1)
   end
 end
                                   
