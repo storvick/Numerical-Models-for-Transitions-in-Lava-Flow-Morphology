@@ -102,7 +102,7 @@ subsection Material model
         set Reference viscosity                       = 50.0
         set Minimum strain rate                       = 1.e-20
         set Reference strain rate                     = 1.e-16
-        set Minimum viscosity                         = 1e-3 
+        set Minimum viscosity                         = 1e-2 
         set Maximum viscosity                         = 1e3
         set Thermal diffusivities                     = 5e-7, 1.4e-7
         set Heat capacities                           = 1200., 4000.
@@ -115,14 +115,14 @@ subsection Material model
         set Activation energies for dislocation creep = 5e2, 0.0
         set Activation volumes for dislocation creep  = 0.0, 0.0
         set Angles of internal friction               = 35., 0.
-        set Cohesions                                 = 1e15, 1e14
+        set Cohesions                                 = 1e16, 1e17
 
   end
 end
 
 
 subsection Mesh refinement
-  set Initial adaptive refinement         = 1
+  set Initial adaptive refinement         = 2
   set Initial global refinement           = 4
   set Minimum refinement level            = 4
   set Refinement fraction                 = 0.4
