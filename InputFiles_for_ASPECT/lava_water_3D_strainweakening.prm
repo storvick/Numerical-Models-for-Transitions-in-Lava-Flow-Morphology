@@ -1,0 +1,183 @@
+#########################################################
+# This is a variation of the composition-passive.prm
+# parameter file, with the exception that we also
+# advect along a set of particles and that we do not longer
+# compute temperature statistics and composition statistics
+# as part of postprocessing
+#
+# See the manual for more information about this setup.
+
+
+set Dimension                              = 3
+set Start time                             = 0
+set End time                               = 7.5
+set Use years in output instead of seconds = false
+set Output directory                       = ./lava_water_3D_output
+set Pressure normalization                 = no
+
+subsection Geometry model
+  set Model name = box
+
+  subsection Box
+    set X extent = 2.5
+    set Y extent = 2
+    set Z extent = 2.5
+  end
+end
+
+# Advecting the free surface vertically rather than
+# in the surface normal direction can result in a
+# more stable mesh when the deformation is large
+subsection Free surface
+  set Surface velocity projection = vertical
+end
+
+subsection Model settings
+  set Fixed temperature boundary indicators   = bottom, top
+  set Fixed composition boundary indicators   = bottom
+  set Zero velocity boundary indicators       =
+  set Tangential velocity boundary indicators = left, right, front, back
+  set Prescribed velocity boundary indicators = bottom: function
+  set Free surface boundary indicators        = top
+end
+
+
+subsection Initial temperature model
+  set Model name = function
+
+  subsection Function
+    set Variable names      = x,y,z
+    set Function constants  = T=1100,s=0.2
+  #  set Function expression = if(sqrt(x*x+y*y)<=0.5, T*exp(-(x*x+y*y)/(s*s))+273,273)
+    set Function expression = if(sqrt(x*x+y*y+z*z)<=0.3, T+273, 273)
+ end
+end
+
+
+subsection Boundary temperature model
+  set List of model names = function
+
+ # subsection Box
+  #  set Top temperature    = 273
+   # set Bottom temperature    = 273
+ # end
+
+  subsection Function
+    set Variable names      = x,y,z
+    set Function constants  = r = 0.2
+    set Function expression = if(z>=2.5, 273, if(sqrt(x*x+y*y)<=r, 1373, 273))
+  end
+end
+
+
+subsection Boundary velocity model
+  subsection Function
+    set Variable names      = x,y,z
+    set Function constants  = r = 0.2
+    set Function expression = 0; 0; if(sqrt(x*x+y*y)<=r && z==0, 0.3, 0.0) #not sure this is right setup
+  end
+end
+
+
+subsection Gravity model
+  set Model name = vertical
+end
+
+
+subsection Material model
+  set Model name = visco plastic
+
+  subsection Visco Plastic
+
+        # Mat. properties other than viscosity
+        set Thermal diffusivities                     = 5e-7, 1.4e-7
+        set Heat capacities                           = 1200., 4000.
+        set Densities                                 = 2800, 1000
+        set Thermal expansivities                     = 2e-5, 2e-5
+        # Set the flow law to be 'lava'
+        set Viscous flow law                          = lava
+        # Let the viscoity be that of the maximum composition.
+        set Viscosity averaging scheme                = maximum composition
+        # Safety measures for reasonable viscosity values
+        set Reference temperature                     = 273.0
+        set Reference viscosity                       = 50.0
+        set Minimum strain rate                       = 1.e-20
+        set Reference strain rate                     = 1.e-16
+        set Minimum viscosity                         = 1e-2
+        set Maximum viscosity                         = 1e3
+        # Lava-specific parameters
+        set Maximum crystal fraction                  = 0.68
+        set Initial crystal fraction                  = 0.0
+        #set Crystal fraction increment                = 0.68
+        set Initial temperature                       = 1373.0
+        set Solidus temperature                       = 873.0
+        set Gamma                                     = 0.04
+        set Alpha                                     = 1.0, 0.0
+        set Viscosity water                           = 10 # 0.1
+        set Beta                                      = 0.0, 1.0
+        # Plasticity-specific parameters
+        set Yield mechanism                           = drucker
+        set Angles of internal friction               = 35., 0.
+        set Cohesions                                 = 1e4, 1e17
+        # strain-weakening parameters
+        set Use strain weakening                      = false
+        set Use finite strain tensor                  = false
+        set Start strain weakening intervals          = 0.0
+        set End strain weakening intervals            = 1.0
+        set Viscous strain weakening factors          = 1.0, 1.0
+        set Friction strain weakening factors         = 1.0, 1.0
+        set Cohesion strain weakening factors         = 1.0, 1.0
+  end
+end
+
+
+subsection Mesh refinement
+  set Initial adaptive refinement         = 2
+  set Initial global refinement           = 4
+  set Minimum refinement level            = 4
+  set Refinement fraction                 = 0.4
+  set Coarsening fraction                 = 0.3
+  set Strategy                            = composition, viscosity
+  set Refinement criteria merge operation = plus
+  set Time steps between mesh refinement  = 0
+end
+
+
+subsection Postprocess
+  set List of postprocessors = visualization #, particles
+
+  subsection Visualization
+    set Time between graphical output = 0.1
+    set List of output variables = material properties, strain rate, stress
+  end
+
+  #subsection Particles
+   # set Number of particles        = 1000
+    #set Time between data output = 0.1
+    #set Data output format       = vtu
+  #end
+end
+
+# This is the new part: We declare that there will
+# be two compositional fields that will be
+# advected along. Their initial conditions are given by
+# a function that is one for the lowermost 0.2 height
+# units of the domain and zero otherwise in the first case,
+# and one in the top most 0.2 height units in the latter.
+subsection Compositional fields
+set Number of fields = 1
+end
+
+subsection Initial composition model
+  set Model name = function
+
+  subsection Function
+    set Variable names      = x,y,z
+    set Function constants  = r=0.5
+    set Function expression = if(sqrt(x*x+y*y+z*z)<r || z<0.01, 0, 1)
+  end
+end
+
+subsection Boundary composition model
+  set Model name = initial composition
+end
