@@ -9,11 +9,18 @@
 
 
 set Dimension                              = 2
+set Resume computation                     = auto
 set Start time                             = 0
 set End time                               = 10.0 
 set Use years in output instead of seconds = false
 set Output directory                       = ./lava_water_initsquare
 set Pressure normalization                 = no
+set Number of cheap Stokes solver steps    = 0
+set Linear solver tolerance                = 1.0e-4
+
+subsection Checkpointing
+  set Steps between checkpoint             = 2
+end
 
 subsection Geometry model
   set Model name = box
