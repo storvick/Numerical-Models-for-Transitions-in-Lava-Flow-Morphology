@@ -13,7 +13,7 @@ set Resume computation                     = auto
 set Start time                             = 0
 set End time                               = 10.0 
 set Use years in output instead of seconds = false
-set Output directory                       = ./lava_water_initsquare_strain_weakening
+set Output directory                       = ./lava_water_initsquare_strain_weakening_highdiffusivity_lowecohesion
 set Pressure normalization                 = no
 set Number of cheap Stokes solver steps    = 0
 set Linear solver tolerance                = 1.0e-4
@@ -102,7 +102,7 @@ subsection Material model
   subsection Visco Plastic
 
         # Mat. properties other than viscosity
-        set Thermal diffusivities                     = 5e-7, 1.4e-7
+        set Thermal diffusivities                     = 5e-4, 1.4e-7
         set Heat capacities                           = 1200., 4000.
         set Densities                                 = 2800, 1000
         set Thermal expansivities                     = 2e-5, 2e-5
@@ -130,7 +130,7 @@ subsection Material model
         # Plasticity-specific parameters
         set Yield mechanism                           = drucker
         set Angles of internal friction               = 0., 0.
-        set Cohesions                                 = 1e4, 1e17
+        set Cohesions                                 = 3e3, 1e17
         # strain-weakening parameters
         #set Use strain weakening                      = true
         #set Use finite strain tensor                  = true
