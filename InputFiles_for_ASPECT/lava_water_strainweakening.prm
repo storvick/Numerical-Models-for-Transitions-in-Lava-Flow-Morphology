@@ -7,12 +7,13 @@
 #
 # See the manual for more information about this setup.
 
+set Additional shared libraries            = ./libfinite_strain.so
 
 set Dimension                              = 2
 set Start time                             = 0
 set End time                               = 10.0 
 set Use years in output instead of seconds = false
-set Output directory                       = ./lava_water_output_frictionangle35
+set Output directory                       = ./lava_water_strain_weakening
 set Pressure normalization                 = no
 
 subsection Geometry model
@@ -94,10 +95,10 @@ subsection Material model
   subsection Visco Plastic
 
         # Mat. properties other than viscosity
-        set Thermal diffusivities                     = 5e-7, 1.4e-7
-        set Heat capacities                           = 1200., 4000.
-        set Densities                                 = 2800, 1000
-        set Thermal expansivities                     = 2e-5, 2e-5
+        set Thermal diffusivities                     = 5e-7, 5e-7, 5e-7, 5e-7, 5e-7, 1.4e-7
+        set Heat capacities                           = 1200., 1200., 1200., 1200., 1200., 4000.
+        set Densities                                 = 2800, 2800, 2800, 2800, 2800, 1000
+        set Thermal expansivities                     = 2e-5, 2e-5, 2e-5, 2e-5, 2e-5, 2e-5
         # Set the flow law to be 'lava'
         set Viscous flow law                          = lava
         # Let the viscoity be that of the maximum composition.
@@ -116,21 +117,21 @@ subsection Material model
         set Initial temperature                       = 1373.0
         set Solidus temperature                       = 873.0
         set Gamma                                     = 0.04
-        set Alpha                                     = 1.0, 0.0
+        set Alpha                                     = 1.0, 1.0, 1.0, 1.0, 1.0, 0.0
         set Viscosity water                           = 10 # 0.1
-        set Beta                                      = 0.0, 1.0
+        set Beta                                      = 0.0, 0.0, 0.0, 0.0, 0.0, 1.0
         # Plasticity-specific parameters
         set Yield mechanism                           = drucker
-        set Angles of internal friction               = 0., 0.
-        set Cohesions                                 = 1e4, 1e17
+        set Angles of internal friction               = 0., 0., 0., 0., 0., 0.
+        set Cohesions                                 = 1e4, 1e4, 1e4, 1e4, 1e4, 1e17
         # strain-weakening parameters
-        set Use strain weakening                      = false
-        set Use finite strain tensor                  = false
+        set Use strain weakening                      = true
+        set Use finite strain tensor                  = true
         set Start strain weakening intervals          = 0.0
         set End strain weakening intervals            = 0.1
-        set Viscous strain weakening factors          = 1.0, 1.0
-        set Friction strain weakening factors         = 1.0, 1.0
-        set Cohesion strain weakening factors         = 1e-2, 1.0
+        set Viscous strain weakening factors          = 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+        set Friction strain weakening factors         = 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+        set Cohesion strain weakening factors         = 1e-2, 1e-2, 1e-2, 1e-2, 1e-2, 1.0
   end
 end
 
@@ -168,7 +169,8 @@ end
 # units of the domain and zero otherwise in the first case,
 # and one in the top most 0.2 height units in the latter.
 subsection Compositional fields
-set Number of fields = 1
+  set Number of fields = 5
+  set Names of fields = strain_xx, strain_xy, strain_yx, strain_yy, lava
 end
 
 subsection Initial composition model
@@ -177,7 +179,7 @@ subsection Initial composition model
   subsection Function
     set Variable names      = x,y
     set Function constants  = r=0.5
-    set Function expression = if(sqrt(x*x+y*y)>r && y > 0.1, 1, 0)
+    set Function expression = 1.0;0;0;1.0;if(sqrt(x*x+y*y)>r && y > 0.1, 1, 0)
   end
 end
                                   
